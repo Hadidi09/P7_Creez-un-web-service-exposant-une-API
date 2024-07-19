@@ -63,7 +63,7 @@ class AppFixtures extends Fixture
             $product->setStock($faker->numberBetween(0, 100));
             $product->setCategory($faker->randomElement($categories));
 
-            // Associe le produit à des clients (Many-to-Many)
+            // Associe le produit à des clients 
             $TheClients = $faker->randomElements($clients, rand(1, 3));
             foreach ($TheClients as $client) {
                 $product->addClient($client);
