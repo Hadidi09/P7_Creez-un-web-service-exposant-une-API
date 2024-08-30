@@ -40,7 +40,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                         ],
                         'description' => 'ID of the client'
                     ]
-                ]
+                ],
+                'summary' => 'consulter la liste des utilisateurs inscrits liés à un client sur le site web'
             ],
 
 
@@ -50,6 +51,9 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/clients/{clientId}/user/{userId}',
             controller: ClientController::class,
             normalizationContext: ['groups' => ['read']],
+            openapiContext: [
+                'summary' => 'consulter le détail d’un utilisateur inscrit lié à un client'
+            ]
 
 
         ),
@@ -69,13 +73,17 @@ use Symfony\Component\Validator\Constraints as Assert;
                         ],
                         'description' => 'ID of the client'
                     ]
-                ]
+                ],
+                'summary' => 'ajouter un nouvel utilisateur lié à un client'
             ]
         ),
         new Delete(
             name: 'delete_user',
             uriTemplate: '/clients/{clientId}/user/{userId}/delete',
             controller: ClientController::class,
+            openapiContext: [
+                'summary' => 'supprimer un utilisateur ajouté par un client'
+            ]
         )
 
 

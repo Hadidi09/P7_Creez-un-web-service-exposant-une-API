@@ -15,8 +15,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
-        new GetCollection()
+        new Get(
+            openapiContext: [
+                'summary' => 'consulter les détails d’un produit BileMo'
+            ]
+        ),
+        new GetCollection(
+            openapiContext: [
+                'summary' => 'consulter la liste des produits BileMo'
+            ]
+        )
     ],
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']]
