@@ -1,5 +1,7 @@
 # P7 Créez un web service exposant une API
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/66b735b281434399b9d73b4971c9b464)](https://app.codacy.com/gh/Hadidi09/P7_Creez-un-web-service-exposant-une-API/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 1. Clonez le projet
 
    `git clone https://github.com/Hadidi09/P7_Creez-un-web-service-exposant-une-API.git`
