@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\User;
 use App\Repository\ClientRepository;
 use App\Repository\UserRepository;
+use App\Service\UserService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,27 +23,26 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ClientController extends AbstractController
 {
-    private $userRepository;
-    private $doctrine;
-    private $em;
-    private $passwordHasher;
 
+    private $userService;
+    private $userRepository;
+    private $clientRepository;
     public function __construct(
         UserRepository $userRepository,
-        ManagerRegistry $doctrine,
-        EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
+        ClientRepository $clientRepository,
+        UserService $userService
+
+
     ) {
         $this->userRepository = $userRepository;
-        $this->doctrine = $doctrine;
-        $this->em = $em;
-        $this->passwordHasher = $passwordHasher;
+        $this->clientRepository = $clientRepository;
+        $this->userService = $userService;
     }
 
     #[Route('/api/clients/{clientId}/users', name: 'app_client', methods: ['GET'])]
-    public function getClientUsers(int $clientId, UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function getClientUsers(int $clientId, SerializerInterface $serializer): JsonResponse
     {
-        $users = $userRepository->findByClient($clientId);
+        $users = $this->userRepository->findByClient($clientId);
 
         if (empty($users)) {
             throw new NotFoundHttpException('Aucun utilisateur trouvé pour ce Client !');
@@ -54,14 +54,14 @@ class ClientController extends AbstractController
     }
 
     #[Route('/api/clients/{clientId}/user/{userId}', name: 'app_details_user', methods: ['GET'])]
-    public function getUserDetails(int $clientId, int $userId, ClientRepository $clientRepository, UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function getUserDetails(int $clientId, int $userId, SerializerInterface $serializer): JsonResponse
     {
-        $client = $clientRepository->find($clientId);
+        $client = $this->clientRepository->find($clientId);
         if (!$client) {
             throw $this->createNotFoundException('Aucun client retrouvé');
         }
 
-        $user = $userRepository->findOneBy(['id' => $userId, 'client' => $client]);
+        $user = $this->userRepository->findOneBy(['id' => $userId, 'client' => $client]);
         if (!$user) {
             throw $this->createNotFoundException('Aucun utilisateur trouvé');
         }
@@ -73,38 +73,27 @@ class ClientController extends AbstractController
 
     #[Route('/api/clients/{clientId}/user', name: 'add_user', methods: ['POST'])]
 
-    public function addUser(Request $request, int $clientId, ClientRepository $clientRepository): JsonResponse
+    public function addUser(Request $request, int $clientId): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $client = $clientRepository->find($clientId);
+        $client = $this->clientRepository->find($clientId);
         if (!$client) {
             throw new NotFoundHttpException('Aucun client retrouvé');
         }
 
-        $user =  new User();
-        $user->setEmail($data['email']);
-        $user->setRoles(['ROLE_USER']);
-        $user->setPassword($this->passwordHasher->hashPassword(
-            $user,
-            $data['password']
-        ));
-        $user->setClient($client);
-
-        $this->em->persist($user);
-        $this->em->flush();
-        return new JsonResponse(['message' => 'Nouveau utilisateur crée !']);
-        // dd($data);
+        $user = $this->userService->createUser($data, $client);
+        return new JsonResponse(['message' => 'Nouveau utilisateur crée !', 'id'  => $user->getId()]);
     }
 
-    #[Route('/api/clients/{clientId}/user/{userId}/delete', name: 'delete_user', methods: ['DELETE'])]
-    public function deleteUser(int $clientId, int $userId, ClientRepository $clientRepository): JsonResponse
+    #[Route('/api/clients/{clientId}/user/{userId}', name: 'delete_user', methods: ['DELETE'])]
+    public function deleteUser(int $clientId, int $userId): JsonResponse
     {
-        $client = $clientRepository->find($clientId);
+        $client = $this->clientRepository->find($clientId);
         if (!$client) {
             throw new NotFoundHttpException('Aucun client retrouvé');
         }
 
-        $user = $this->em->getRepository(User::class)->findOneBy([
+        $user = $this->userRepository->findOneBy([
             'id' => $userId,
             'client' => $client
         ]);
@@ -113,8 +102,7 @@ class ClientController extends AbstractController
             throw new NotFoundHttpException('Aucun utilisateur trouvé');
         }
 
-        $this->em->remove($user);
-        $this->em->flush();
+        $this->userService->deleteUser($user);
 
         return new JsonResponse(['message' => 'Utilisateur supprimé avec succés !'], 200);
     }

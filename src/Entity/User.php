@@ -79,7 +79,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Delete(
             name: 'delete_user',
-            uriTemplate: '/clients/{clientId}/user/{userId}/delete',
+            uriTemplate: '/clients/{clientId}/user/{userId}',
             controller: ClientController::class,
             openapiContext: [
                 'summary' => 'supprimer un utilisateur ajouté par un client'
