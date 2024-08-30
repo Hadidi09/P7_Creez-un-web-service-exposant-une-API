@@ -9,9 +9,9 @@
 2. exécutez la commande composer install
 3. > Renseignez les identifiants de votre base de données MYSQL dans le fichier .env.local comme ceci : 3. Créez un fichier **.env.local** à la racine de votre projet. 4. Dans ce fichier .env.local, ajoutez la ligne suivante pour configurer la connexion à votre base de données MySQL :
 
-`DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DB_NAME?serverVersion=5.1.36&charset=utf8mb4"`
+   `DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DB_NAME?serverVersion=5.1.36&charset=utf8mb4"`
 
-4.  Remplacez les éléments suivants par vos informations :
+4. Remplacez les éléments suivants par vos informations:
 
 > USER : Nom d'utilisateur de votre base de données
 
@@ -23,16 +23,16 @@
 
 > DB_NAME : Nom de votre base de données 6.
 
-Dans le fichier **.env** existant à la racine du projet, assurez vous que la variable d'environnement suivante est présente :
+Dans le fichier **.env** existant à la racine du projet, assurez vous que la variable d'environnement suivante est présente:
 
 `DATABASE_URL=${DATABASE_URL}`
 
-5.  Exécuter la commande :
+5. Exécuter la commande:
 
 `php bin/console doctrine:database:create`
 
-6.  Pour créez les tables
-    Exécuter la commande :
+6. Pour créez les tables
+   Exécuter la commande:
 
 `php bin/console make:migration`
 
@@ -40,7 +40,7 @@ puis la commande :
 
 `php bin/console doctrine:migrations:migrate`
 
-7. Pour créer des données rapidement, utilisez les fixtures :
+7. Pour créer des données rapidement, utilisez les fixtures:
 
    `php bin/console doctrine:fixtures:load`
 
@@ -51,20 +51,19 @@ puis la commande :
 
    `openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout`
 
-   Dans le fichier .env ces nouvelles lignes vont apparaitre :
+   Dans le fichier .env ces nouvelles lignes vont apparaitre:
 
    `JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem`
    `JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem`
 
    `JWT_PASSPHRASE=b2cfdd55588s8s8l89s8s845scd774`
 
-   copiez-coller ces lignes dans le fichier .env.local et renseigner votre passphrase ici :
+   copiez-coller ces lignes dans le fichier .env.local et renseigner votre passphrase ici:
    `JWT_PASSPHRASE=MonPASSPHRASE`
 
-9. chargez vos fixtures avec la commande :
+9. chargez vos fixtures avec la commande:
 
    `php bin/console doctrine:fixtures:load`
 
 10. Lancez votre projet avec la commande
-
     `symfony serve`
